@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>.com</title>
+    <style>
+      body {
+        margin: 0;
+        box-sizing: borde;
+      }
+      .contenedor {
+        background-color: lightblue;
+        position: fixed;
+        display: flex;
+        width: 95%;
+        height: auto;
+        bottom: 20px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 10px;
+      }
+      .example {
+        box-sizing: border-box;
+        height: 25px;
+        min-height: 25px;
+        width: 70%;
+        font-size: 17px;
+        line-height: 21px;
+      }
+      .boton {
+        width: 50px;
+        height: 25px;
+        background-color: #333;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .parrafo {
+        position: relative;
+        left: 15px;
+        width: 80%;
+      }
+      .parrafo2 {
+        position: relative;
+        background-color: #333;
+        color: white;
+        border: 3px solid black;
+        width: 60%;
+        left: 15px;
+        white-space: pre-wrap;
+        font-size: 14px;
+        padding: 10px 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="parrafo">Resultado:</p>
+    <p class="parrafo2" id="resultado">Sin resultados</p>
+    <div class="contenedor">
+      <textarea class="example" id="textContener"></textarea>
+      <button class="boton" id="enviar">Enviar</button>
+    </div>
+    <script>
+      const textcontener = document.getElementById("textContener");
+      textcontener.addEventListener("input", crecer);
+      function crecer() {
+        this.style.height = "25px";
+        if (this.value !== "") {
+          this.style.height = this.scrollHeight + "px";
+        }
+      }
+      const boton = document.getElementById("enviar");
+      const resultado = document.getElementById("resultado");
+      boton.addEventListener("click", botonPress);
+      function botonPress() {
+        const textoIngresado = textcontener.value;
+        let result;
+        const originalConsole = console.log;
+        const output = [];
+
+        const procesarArray = (array, indent = 2) => {
+          const espacio = " ".repeat(indent);
+          return array.map((elemento) => {
+            if (Array.isArray(elemento)) {
+              alert("m")
+              return `[${elemento.join(", ")}]`;
+
+
+            } else if (typeof elemento === "object" && elemento !== null) {
+              const keys = Object.keys(elemento);
+              if (keys.length === 1) {
+                return `${espacio}{ ${keys[0]}: ${JSON.stringify(elemento[keys[0]])} }`
+              }
+              return `${espacio}{\n${Object.entries(elemento).map(([key, value]) => `${" ".repeat(indent + 2)}${key}: ${JSON.stringify(value)}`).join(",\n")}\n${espacio}}`;
+            }
+
+
+
+            return `${espacio}${JSON.stringify(elemento)}`;
+          }).join(",\n");
+        };
+
+        console.log = function (...args) {
+          alert(args.length);
+          const procesarArgs = args.map(arg => {
+            if (Array.isArray(arg)) {
+              if (arg.length === 1) {
+                if (typeof arg[0] === "object" && arg[0] !== null) {
+                  const keys = Object.keys(arg[0]);
+                  if (keys.length === 1) {
+                    return `[{${Object.entries(arg[0]).map(([key, value]) => {
+                      return ` ${key}: ${JSON.stringify(value)} `
+                    })}}]`
+                  }
+                   return `[\n${procesarArray(arg)}\n]`;
+                }
+                return `[${JSON.stringify(arg[0])}]`;
+              }
+              return `[\n${procesarArray(arg)}\n]`;
+
+
+
+            } else if (typeof arg === "object" && arg !== null) {
+              return `{\n${Object.entries(arg).map(([key, value]) => {
+                return `${key}: ${JSON.stringify(value)}`
+              }).join(",\n")}\n}`
+            }
+            return arg;
+          });
+          output.push(procesarArgs.join(",\n"));
+        }
+        try {
+          result = eval(textoIngresado);
+          const logOutpt = output.length > 0 ? output.join("\n") : JSON.stringify(result);
+          resultado.textContent = logOutpt !== undefined ? logOutpt : "sin resultados"
+        } catch (error) {
+          alert("error")
+        } finally {
+          console.log = originalConsole;
+        }
+
+
+        textcontener.value = "";
+        textcontener.style.height = "25px"
+      }
+    </script>
+  </body>
+</html>
